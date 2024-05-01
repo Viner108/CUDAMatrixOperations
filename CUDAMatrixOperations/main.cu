@@ -19,7 +19,7 @@ int main()
 	float* hC;
 	float* dC;
 
-	int  N_thread = 3;
+	int  N_thread = 4;
 	int vectorSize = N_thread * 1;
 	int matrixSize = vectorSize * vectorSize;
 	int N_blocks;
@@ -61,6 +61,7 @@ int main()
 
 		}
 	}
+	printf("\n");
 
 	N_blocks = matrixSize / N_thread;
 
