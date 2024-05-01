@@ -3,6 +3,7 @@
 #define KERNEL_H
 
 
-__global__ void function(float* dA, float* dB, float* dC, int size);
+__global__ void functionX(float* dA, float* dB, float* dC, int size);
+
 
 #endif // KERNEL_H

@@ -78,11 +78,13 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="matrixExponentiation.cu" />
+    <CudaCompile Include="matrixXMatrix.cu" />
     <CudaCompile Include="main.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="kernel.h" />
+    <ClInclude Include="matrixExponentiation.h" />
+    <ClInclude Include="matrixXMatrix.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
