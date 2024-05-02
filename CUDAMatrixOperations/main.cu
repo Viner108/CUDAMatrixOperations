@@ -6,6 +6,7 @@
 #include <math.h>
 #include "matrixXMatrix.h"
 #include "matrixExponentiation.h"
+#include <chrono>
 
 
 int matrixMultiplication();
@@ -13,32 +14,39 @@ int matrixExponention(int exponent);
 
 int main()
 {
-	return matrixExponention(4);
+	return matrixExponention(5);
 	//return matrixMultiplication();
 
 }
 int matrixExponention(int exponent) {
-	float* hA;
-	float* dA;
 
-	float* hB;
-	float* dB;
+	float timerValueGPU, timerValueCPU;
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
 
-	float* hC;
-	float* dC;
+	double* hA;
+	double* dA;
 
-	int  N_thread = 3;
+	double* hB;
+	double* dB;
+
+	double* hC;
+	double* dC;
+
+	int  N_thread = 1000;
 	int vectorSize = N_thread * 1;
 	int matrixSize = vectorSize * vectorSize;
 	int N_blocks;
 	int i;
 	int j;
-	unsigned int matrixMem_size = sizeof(float) * matrixSize;
+	unsigned int matrixMem_size = sizeof(double) * matrixSize;
 
-	hA = (float*)malloc(matrixMem_size);
-	hB = (float*)malloc(matrixMem_size);
-	hC = (float*)malloc(matrixMem_size);
+	hA = (double*)malloc(matrixMem_size);
+	hB = (double*)malloc(matrixMem_size);
+	hC = (double*)malloc(matrixMem_size);
 
+	
 	cudaError_t err;
 
 	err = cudaMalloc((void**)&dA, matrixMem_size);
@@ -61,10 +69,10 @@ int matrixExponention(int exponent) {
 
 	for (i = 0; i < vectorSize; i++) {
 		for (int j = 0; j < vectorSize; j++) {
-			hA[i * vectorSize + j] = j+2;
-			printf("A[%d,%d] = %.5f\n", i, j, hA[i * vectorSize + j]);
-			hB[i * vectorSize + j] = j+2;
-			printf("B[%d,%d] = %.5f\n", i, j, hB[i * vectorSize + j]);
+			hA[i * vectorSize + j] = j+1;
+			//printf("A[%d,%d] = %.5f\n", i, j, hA[i * vectorSize + j]);
+			hB[i * vectorSize + j] = j+1;
+			//printf("B[%d,%d] = %.5f\n", i, j, hB[i * vectorSize + j]);
 			hC[i * vectorSize + j] = 0.0f;
 		}
 	}
@@ -73,13 +81,34 @@ int matrixExponention(int exponent) {
 	printf("\n");
 
 	N_blocks = matrixSize / N_thread;
+	cudaEventRecord(start, 0);
 
 	cudaMemcpy(dA, hA, matrixMem_size, cudaMemcpyHostToDevice);
 	cudaMemcpy(dB, hB, matrixMem_size, cudaMemcpyHostToDevice);
 
-	matrixExponentiation (dA, dB, dC, exponent, vectorSize);
+	
 
-	cudaMemcpy(hC, dC, matrixMem_size, cudaMemcpyDeviceToHost);
+	matrixExponentiation (dA, dB, dC, exponent, vectorSize);
+	cudaError_t error = cudaGetLastError();
+	if (error != cudaSuccess) {
+		fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(error));
+		return 1;
+	}
+	
+
+	err = cudaMemcpy(hC, dC, matrixMem_size, cudaMemcpyDeviceToHost);
+	if (err != cudaSuccess) {
+		fprintf(stderr, "Cannot copy data device/host : %s\n", cudaGetErrorString(err));
+		return 1;
+	}
+
+	cudaDeviceSynchronize();
+	cudaEventRecord(stop, 0);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&timerValueGPU, start, stop);
+	printf("\n GPU calculation time: %f ms\n", timerValueGPU);
+
+
 
 	for (i = 0; i < vectorSize; i++) {
 		for (int j = 0; j < vectorSize; j++) {
@@ -87,6 +116,8 @@ int matrixExponention(int exponent) {
 
 		}
 	}
+
+
 
 	free(hA);
 	free(hB);
@@ -99,14 +130,14 @@ int matrixExponention(int exponent) {
 }
 
 int matrixMultiplication() {
-	float* hA;
-	float* dA;
+	double* hA;
+	double* dA;
 
-	float* hB;
-	float* dB;
+	double* hB;
+	double* dB;
 
-	float* hC;
-	float* dC;
+	double* hC;
+	double* dC;
 
 	int  N_thread = 2;
 	int vectorSize = N_thread * 1;
@@ -114,11 +145,11 @@ int matrixMultiplication() {
 	int N_blocks;
 	int i;
 	int j;
-	unsigned int matrixMem_size = sizeof(float) * matrixSize;
+	unsigned int matrixMem_size = sizeof(double) * matrixSize;
 
-	hA = (float*)malloc(matrixMem_size);
-	hB = (float*)malloc(matrixMem_size);
-	hC = (float*)malloc(matrixMem_size);
+	hA = (double*)malloc(matrixMem_size);
+	hB = (double*)malloc(matrixMem_size);
+	hC = (double*)malloc(matrixMem_size);
 
 	cudaError_t err;
 

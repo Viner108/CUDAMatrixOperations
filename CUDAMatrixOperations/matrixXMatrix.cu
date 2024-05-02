@@ -3,7 +3,7 @@
 #include "device_launch_parameters.h"
 #include <math.h>
 
-__global__ void functionX(float* dA, float* dB, float* dC, int vectorSize)
+__global__ void functionX(double* dA, double* dB, double* dC, int vectorSize)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i < vectorSize*vectorSize) {

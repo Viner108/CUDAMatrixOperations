@@ -3,7 +3,7 @@
 #include <math.h>
 #include "matrixXMatrix.h"
 
- void matrixExponentiation(float* dA, float* dB, float* dC, int exponent, int vectorSize)
+ void matrixExponentiation(double* dA, double* dB, double* dC, int exponent, int vectorSize)
 {
 	for (int i = 1; i < exponent; i++)
 	{

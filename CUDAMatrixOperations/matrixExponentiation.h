@@ -2,7 +2,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
- void matrixExponentiation(float* dA, float* dB, float* dC, int exponent, int vectorSize);
+ void matrixExponentiation(double* dA, double* dB, double* dC, int exponent, int vectorSize);
 
 
 #endif // MATRIX_H
